@@ -1,0 +1,29 @@
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+
+# Virtual environments
+.venv/
+venv/
+env/
+
+# Test and coverage output
+.coverage
+htmlcov/
+.pytest_cache/
+
+# PyCharm / IntelliJ local files
+.idea/workspace.xml
+.idea/tasks.xml
+.idea/usage.statistics.xml
+.idea/shelf/
+
+# Operating system files
+.DS_Store
+Thumbs.db
+
+# SQLite temporary files
+*.db-journal
+*.db-shm
+*.db-wal

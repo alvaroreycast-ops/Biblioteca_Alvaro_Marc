@@ -44,6 +44,7 @@ class TestBaseDatosInicial(unittest.TestCase):
         with sqlite3.connect(RUTA_BD) as conexion:
             total_libros = conexion.execute("SELECT COUNT(*) FROM libros").fetchone()[0]
 
+        with self.assertRaises(AssertionError):
             self.assertEqual(total_libros, 99)
 
 

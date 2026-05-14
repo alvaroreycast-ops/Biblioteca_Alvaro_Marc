@@ -42,7 +42,9 @@ class TestBaseDatosInicial(unittest.TestCase):
 
     def test_fallido1(self):
         with sqlite3.connect(RUTA_BD) as conexion:
-            conexion.execute("SELECT * FROM tabla_que_no_existe").fetchall()
+            total_libros = conexion.execute("SELECT COUNT(*) FROM libros").fetchone()[0]
+
+            self.assertEqual(total_libros, 99)
 
 
 if __name__ == "__main__":

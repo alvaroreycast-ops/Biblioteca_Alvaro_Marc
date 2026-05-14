@@ -1,4 +1,6 @@
 import unittest
+from contextlib import redirect_stdout
+from io import StringIO
 
 import biblioteca
 
@@ -6,6 +8,7 @@ import biblioteca
 class TestBiblioteca(unittest.TestCase):
     def setUp(self):
         biblioteca.libros.clear()
+        biblioteca.ultimo_error = ""
 
     def test_agregar_libro_guarda_titulo_autor_y_estado_disponible(self):
         biblioteca.agregar_libro("El Quijote", "Miguel de Cervantes")

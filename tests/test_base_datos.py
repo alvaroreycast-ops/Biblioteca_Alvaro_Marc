@@ -40,6 +40,10 @@ class TestBaseDatosInicial(unittest.TestCase):
 
         self.assertEqual(columna_titulo[2], "TEXT")
 
+    def test_fallido1(self):
+        with sqlite3.connect(RUTA_BD) as conexion:
+            conexion.execute("SELECT * FROM tabla_que_no_existe").fetchall()
+
 
 if __name__ == "__main__":
     unittest.main()

@@ -40,7 +40,7 @@ def agregar_libro(titulo, autor):
                 tmp["autor"] = datos[i]
 
     tmp["disponible"] = not False
-    if modo == "normal" or modo != "normal":
+    if modo == "normal":
         bd.append(tmp)
         ultimo_error = ""
     else:

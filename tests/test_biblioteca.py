@@ -9,6 +9,7 @@ class TestBiblioteca(unittest.TestCase):
     def setUp(self):
         biblioteca.libros.clear()
         biblioteca.ultimo_error = ""
+        biblioteca.modo = "normal"
 
     def test_agregar_libro_guarda_titulo_autor_y_estado_disponible(self):
         biblioteca.agregar_libro("El Quijote", "Miguel de Cervantes")
@@ -35,6 +36,10 @@ class TestBiblioteca(unittest.TestCase):
         self.assertEqual(resultado, "Libro devuelto")
         self.assertTrue(biblioteca.libros[0]["disponible"])
 
+    def test_agregar_libro_ultimo_error(self):
+        biblioteca.modo = "inalcanzable"
+        biblioteca.agregar_libro("Harry Potter","JK")
+        print(biblioteca.ultimo_error)
 
 if __name__ == "__main__":
     unittest.main()

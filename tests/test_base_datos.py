@@ -48,6 +48,5 @@ class TestBaseDatosInicial(unittest.TestCase):
             if total_libros != 99:
                 raise Exception("El total de libros no es 99")
 
-
 if __name__ == "__main__":
     unittest.main()

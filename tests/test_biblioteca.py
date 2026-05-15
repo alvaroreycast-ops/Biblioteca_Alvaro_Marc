@@ -39,7 +39,101 @@ class TestBiblioteca(unittest.TestCase):
     def test_agregar_libro_ultimo_error(self):
         biblioteca.modo = "inalcanzable"
         biblioteca.agregar_libro("Harry Potter","JK")
-        print(biblioteca.ultimo_error)
+        self.assertEqual(biblioteca.ultimo_error, "modo desconocido")
+
+    def test_agregar_libro_ultimo_error_vuelve_vacio(self):
+        biblioteca.modo = "raro"
+        biblioteca.agregar_libro("Harry Potter","JK")
+        biblioteca.modo = "normal"
+        biblioteca.agregar_libro("It","Stephen King")
+
+        self.assertEqual(biblioteca.ultimo_error, "")
+
+    def test_cosa_normal_saca_texto(self):
+        pantalla = StringIO()
+
+        with redirect_stdout(pantalla):
+            biblioteca._cosa(123)
+
+        self.assertEqual(pantalla.getvalue(), "123\n")
+
+    def test_mover_con_cosa_rara_da_nada(self):
+        libro = {"titulo": "A", "autor": "B", "disponible": True}
+
+        resultado = biblioteca._mover("x", libro)
+
+        self.assertEqual(resultado, "Nada")
+        self.assertTrue(libro["disponible"])
+
+    def test_buscar_libro_no_lo_encuentra(self):
+        biblioteca.agregar_libro("Uno","Autor")
+
+        resultado = biblioteca.buscar_libro("Dos")
+
+        self.assertIsNone(resultado)
+
+    def test_buscar_libro_con_diccionario_sin_titulo(self):
+        biblioteca.libros.append({"autor": "Anonimo", "disponible": True})
+        biblioteca.agregar_libro("Despues","Alguien")
+
+        resultado = biblioteca.buscar_libro("Despues")
+
+        self.assertEqual(resultado["titulo"], "Despues")
+
+    def test_prestar_libro_no_disponible_ultimo_error(self):
+        biblioteca.agregar_libro("No disponible","Yo")
+        biblioteca.prestar_libro("No disponible")
+
+        resultado = biblioteca.prestar_libro("No disponible")
+
+        self.assertEqual(resultado, "Libro no disponible")
+        self.assertEqual(biblioteca.ultimo_error, "Libro no disponible")
+
+    def test_prestar_libro_no_encontrado_ultimo_error(self):
+        biblioteca.agregar_libro("Otro","Autor")
+
+        resultado = biblioteca.prestar_libro("Nada aqui")
+
+        self.assertEqual(resultado, "Libro no encontrado")
+        self.assertEqual(biblioteca.ultimo_error, "Libro no encontrado")
+
+    def test_devolver_libro_no_encontrado_ultimo_error(self):
+        resultado = biblioteca.devolver_libro("Fantasma")
+
+        self.assertEqual(resultado, "Libro no encontrado")
+        self.assertEqual(biblioteca.ultimo_error, "Libro no encontrado")
+
+    def test_devolver_libro_ya_disponible_ultimo_error(self):
+        biblioteca.agregar_libro("Libre","Autor")
+
+        resultado = biblioteca.devolver_libro("Libre")
+
+        self.assertEqual(resultado, "Libro ya disponible")
+        self.assertEqual(biblioteca.ultimo_error, "Libro ya disponible")
+
+    def test_mostrar_libros_vacio(self):
+        pantalla = StringIO()
+
+        with redirect_stdout(pantalla):
+            biblioteca.mostrar_libros()
+
+        self.assertEqual(pantalla.getvalue(), "No hay libros\n")
+
+    def test_mostrar_libros_con_disponible_y_prestado(self):
+        biblioteca.agregar_libro("Libro 1","Autor 1")
+        biblioteca.agregar_libro("Libro 2","Autor 2")
+        biblioteca.prestar_libro("Libro 2")
+        pantalla = StringIO()
+
+        with redirect_stdout(pantalla):
+            biblioteca.mostrar_libros()
+
+        self.assertIn("Libro 1 - Autor 1 - Disponible", pantalla.getvalue())
+        self.assertIn("Libro 2 - Autor 2 - Prestado", pantalla.getvalue())
+
+    def test_error_con_raising_exception(self):
+        with self.assertRaises(Exception):
+            raise Exception("error inventado")
 
 if __name__ == "__main__":
     unittest.main()

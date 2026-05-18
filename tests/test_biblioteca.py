@@ -49,18 +49,18 @@ class TestBiblioteca(unittest.TestCase):
 
         self.assertEqual(biblioteca.ultimo_error, "")
 
-    def test_cosa_normal_saca_texto(self):
+    def test_mostrar_mensaje_biblioteca_saca_texto(self):
         pantalla = StringIO()
 
         with redirect_stdout(pantalla):
-            biblioteca._cosa(123)
+            biblioteca._mostrar_mensaje_biblioteca(123)
 
         self.assertEqual(pantalla.getvalue(), "123\n")
 
-    def test_mover_con_cosa_rara_da_nada(self):
+    def test_actualizar_estado_prestamo_con_accion_rara_da_nada(self):
         libro = {"titulo": "A", "autor": "B", "disponible": True}
 
-        resultado = biblioteca._mover("x", libro)
+        resultado = biblioteca._actualizar_estado_prestamo("x", libro)
 
         self.assertEqual(resultado, "Nada")
         self.assertTrue(libro["disponible"])

@@ -28,22 +28,23 @@ def _actualizar_estado_prestamo(accion, libro):
 
 
 def agregar_libro(titulo, autor):
+    """Agrega un libro nuevo a la biblioteca."""
     global ultimo_error
-    datos = []
-    datos.append(titulo)
-    datos.append(autor)
-    tmp = {}
+    datos_libro = []
+    datos_libro.append(titulo)
+    datos_libro.append(autor)
+    libro_nuevo = {}
 
-    for i in range(0, len(datos)):
-        if i == 0:
-            tmp["titulo"] = datos[i]
+    for posicion_dato in range(0, len(datos_libro)):
+        if posicion_dato == 0:
+            libro_nuevo["titulo"] = datos_libro[posicion_dato]
         else:
-            if i == 1:
-                tmp["autor"] = datos[i]
+            if posicion_dato == 1:
+                libro_nuevo["autor"] = datos_libro[posicion_dato]
 
-    tmp["disponible"] = not False
+    libro_nuevo["disponible"] = not False
     if modo == "normal":
-        bd.append(tmp)
+        bd.append(libro_nuevo)
         ultimo_error = ""
     else:
         ultimo_error = "modo desconocido"

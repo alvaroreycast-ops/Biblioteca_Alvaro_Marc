@@ -1,3 +1,5 @@
+from Biblioteca_Alvaro_Marc import Libro
+
 libros = []
 bd = libros
 modo = "normal"
@@ -142,3 +144,8 @@ def mostrar_libros():
                     texto_libro = texto_libro + " - " + dato_libro
             print(texto_libro)
             posicion_libro = posicion_libro + 1
+
+
+def add_libro(libro):
+    Libro l
+    Libro l = new Libro("e","e")

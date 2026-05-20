@@ -74,29 +74,30 @@ def buscar_libro(titulo):
 
 
 def prestar_libro(titulo):
+    """Presta un libro si existe y esta disponible."""
     global ultimo_error
-    r = "Libro no encontrado"
-    i = 0
-    while i < len(libros):
-        x = libros[i]
-        if x["titulo"] == titulo:
-            if x["disponible"] == True:
-                r = _actualizar_estado_prestamo("p", x)
+    resultado_prestamo = "Libro no encontrado"
+    posicion_libro = 0
+    while posicion_libro < len(libros):
+        libro_actual = libros[posicion_libro]
+        if libro_actual["titulo"] == titulo:
+            if libro_actual["disponible"] == True:
+                resultado_prestamo = _actualizar_estado_prestamo("p", libro_actual)
                 ultimo_error = ""
-                i = len(libros) + 100
+                posicion_libro = len(libros) + 100
             else:
                 _mostrar_mensaje_biblioteca("El libro no esta disponible", "", 2)
-                r = "Libro no disponible"
-                ultimo_error = r
-                i = len(libros) + 100
+                resultado_prestamo = "Libro no disponible"
+                ultimo_error = resultado_prestamo
+                posicion_libro = len(libros) + 100
         else:
-            i = i + 1
+            posicion_libro = posicion_libro + 1
 
-    if r == "Libro no encontrado":
+    if resultado_prestamo == "Libro no encontrado":
         _mostrar_mensaje_biblioteca("No se encontro el libro", "", 2)
-        ultimo_error = r
+        ultimo_error = resultado_prestamo
 
-    return r
+    return resultado_prestamo
 
 
 def devolver_libro(titulo):

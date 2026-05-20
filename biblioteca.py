@@ -1,4 +1,5 @@
-from Biblioteca_Alvaro_Marc import Libro
+from bd import conexion
+from clases.Libro import Libro
 
 libros = []
 bd = libros
@@ -147,5 +148,39 @@ def mostrar_libros():
 
 
 def add_libro(libro):
-    Libro l
-    Libro l = new Libro("e","e")
+    """Añade un libro a la base de datos."""
+    with conexion.get_connection() as conn:
+        cursor = conn.cursor()
+        cursor.execute("""
+                       INSERT INTO libros (titulo, autor, disponible, isbn)
+                       VALUES (?, ?, ?, ?)
+                       """, (libro.titulo, libro.autor, libro.disponible, libro.isbn))
+        conn.commit()
+
+def remove_libro(id):
+    """Elimina un libro de la base de datos según su id."""
+    with conexion.get_connection() as conn:
+        cursor = conn.cursor()
+        cursor.execute("DELETE FROM libros WHERE id = ?", (id,))
+        conn.commit()
+
+def get_libro(id):
+    """Recibe un libro de la base de datos según su id."""
+    with conexion.get_connection() as conn:
+        cursor = conn.cursor()
+        cursor.execute("SELECT * FROM libros WHERE id = ?", (id,))
+        resultado =  cursor.fetchone()
+
+    if resultado:
+        return Libro(resultado[1], resultado[2], resultado[3], resultado[4])
+    return None
+
+def list_libros():
+    """READ: Devuelve una lista de todos los objetos Libro."""
+    libros = []
+    with conexion.get_connection() as conn:
+        cursor = conn.cursor()
+        cursor.execute("SELECT titulo, autor, isbn, disponible FROM libros")
+        for fila in cursor.fetchall():
+            libros.append(Libro(fila[0], fila[1], fila[2], fila[3]))
+    return libros

@@ -20,7 +20,7 @@ class TestBaseDatosInicial(unittest.TestCase):
         self.assertIn(("libros",), tablas)
         self.assertEqual(
             [columna[1] for columna in columnas],
-            ["id", "titulo", "autor", "disponible"],
+            ["id", "titulo", "autor", "disponible", "isbn"],
         )
         self.assertEqual(total_libros, 0)
 

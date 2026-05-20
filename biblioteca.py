@@ -120,24 +120,25 @@ def devolver_libro(titulo):
 
 
 def mostrar_libros():
-    contador = 0
+    """Muestra todos los libros de la biblioteca por pantalla."""
+    posicion_libro = 0
     if len(bd) == 0:
         _mostrar_mensaje_biblioteca("No hay libros", "", 2)
     else:
-        while contador < len(bd):
-            x = bd[contador]
-            estado = ""
-            if x["disponible"] == True:
-                estado = estado + "Disponible"
+        while posicion_libro < len(bd):
+            libro_actual = bd[posicion_libro]
+            estado_libro = ""
+            if libro_actual["disponible"] == True:
+                estado_libro = estado_libro + "Disponible"
             else:
-                if x["disponible"] == False:
-                    estado = estado + "Prestado"
-            salida = ""
-            partes = [x["titulo"], x["autor"], estado]
-            for p in partes:
-                if salida == "":
-                    salida = p
+                if libro_actual["disponible"] == False:
+                    estado_libro = estado_libro + "Prestado"
+            texto_libro = ""
+            partes_libro = [libro_actual["titulo"], libro_actual["autor"], estado_libro]
+            for dato_libro in partes_libro:
+                if texto_libro == "":
+                    texto_libro = dato_libro
                 else:
-                    salida = salida + " - " + p
-            print(salida)
-            contador = contador + 1
+                    texto_libro = texto_libro + " - " + dato_libro
+            print(texto_libro)
+            posicion_libro = posicion_libro + 1

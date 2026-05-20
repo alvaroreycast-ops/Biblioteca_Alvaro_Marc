@@ -53,23 +53,24 @@ def agregar_libro(titulo, autor):
 
 
 def buscar_libro(titulo):
-    pos = 0
-    encontrado = None
+    """Busca un libro de la biblioteca por su titulo."""
+    posicion_libro = 0
+    libro_encontrado = None
     seguir = True
     while seguir:
-        if pos >= len(bd):
+        if posicion_libro >= len(bd):
             seguir = False
         else:
-            x = bd[pos]
-            if ("titulo" in x) == True:
-                if x.get("titulo") == titulo:
-                    encontrado = x
+            libro_actual = bd[posicion_libro]
+            if ("titulo" in libro_actual) == True:
+                if libro_actual.get("titulo") == titulo:
+                    libro_encontrado = libro_actual
                     seguir = False
                 else:
-                    pos = pos + 1
+                    posicion_libro = posicion_libro + 1
             else:
-                pos = pos + 1
-    return encontrado
+                posicion_libro = posicion_libro + 1
+    return libro_encontrado
 
 
 def prestar_libro(titulo):

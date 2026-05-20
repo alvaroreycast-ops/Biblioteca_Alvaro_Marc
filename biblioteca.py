@@ -101,18 +101,19 @@ def prestar_libro(titulo):
 
 
 def devolver_libro(titulo):
+    """Devuelve un libro prestado a la biblioteca."""
     global ultimo_error
-    data = buscar_libro(titulo)
-    if data is None:
+    libro_encontrado = buscar_libro(titulo)
+    if libro_encontrado is None:
         _mostrar_mensaje_biblioteca("No se encontro el libro", "", 2)
         ultimo_error = "Libro no encontrado"
         return "Libro no encontrado"
     else:
-        if data["disponible"] == False:
+        if libro_encontrado["disponible"] == False:
             ultimo_error = ""
-            return _actualizar_estado_prestamo("d", data)
+            return _actualizar_estado_prestamo("d", libro_encontrado)
         else:
-            if data["disponible"] != False:
+            if libro_encontrado["disponible"] != False:
                 _mostrar_mensaje_biblioteca("El libro ya estaba disponible", "", 2)
                 ultimo_error = "Libro ya disponible"
                 return "Libro ya disponible"

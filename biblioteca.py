@@ -164,11 +164,44 @@ def remove_libro(id):
         cursor.execute("DELETE FROM libros WHERE id = ?", (id,))
         conn.commit()
 
-def get_libro(id):
+def get_libroById(id):
     """Recibe un libro de la base de datos según su id."""
     with conexion.get_connection() as conn:
         cursor = conn.cursor()
         cursor.execute("SELECT * FROM libros WHERE id = ?", (id,))
+        resultado =  cursor.fetchone()
+
+    if resultado:
+        return Libro(resultado[1], resultado[2], resultado[3], resultado[4])
+    return None
+
+def get_libroByTitulo(titulo):
+    """Recibe un libro de la base de datos según su titulo."""
+    with conexion.get_connection() as conn:
+        cursor = conn.cursor()
+        cursor.execute("SELECT * FROM libros WHERE titulo = ?", (titulo,))
+        resultado =  cursor.fetchone()
+
+    if resultado:
+        return Libro(resultado[1], resultado[2], resultado[3], resultado[4])
+    return None
+
+def get_libroByAutor(autor):
+    """Recibe un libro de la base de datos según su titulo."""
+    with conexion.get_connection() as conn:
+        cursor = conn.cursor()
+        cursor.execute("SELECT * FROM libros WHERE autor = ?", (autor,))
+        resultado =  cursor.fetchone()
+
+    if resultado:
+        return Libro(resultado[1], resultado[2], resultado[3], resultado[4])
+    return None
+
+def get_libroByDisponible(disponible):
+    """Recibe un libro de la base de datos según su titulo."""
+    with conexion.get_connection() as conn:
+        cursor = conn.cursor()
+        cursor.execute("SELECT * FROM libros WHERE disponible = ?", (disponible,))
         resultado =  cursor.fetchone()
 
     if resultado:

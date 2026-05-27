@@ -7,7 +7,7 @@ from clases.Libro import Libro
 class TestLibros(unittest.TestCase):
 
     def test_add(self):
-        libro = Libro("Naruto", "Oda", "123", 1)
+        libro = Libro("Naruto", "Oda", 123, "1")
         biblioteca.add_libro(libro)
 
         conn = conexion.get_connection()
@@ -23,7 +23,7 @@ class TestLibros(unittest.TestCase):
             conn.close()
 
     def test_remove_libro(self):
-        libro = Libro("Dragon Ball GT", "Akira", "456", 1)
+        libro = Libro("Dragon Ball GT", "Akira", 456, "1")
         biblioteca.add_libro(libro)
 
         conn = conexion.get_connection()
@@ -44,8 +44,8 @@ class TestLibros(unittest.TestCase):
         self.assertEqual(resultado, 0)
 
 
-    def test_get_libro(self):
-        libro = Libro("Jeronimo Stilton", "Sebita Sebas", "214", 1)
+    def test_get_libroById(self):
+        libro = Libro("Jeronimo Stilton", "Sebita Sebas", 214, "1")
         biblioteca.add_libro(libro)
 
         conn = conexion.get_connection()
@@ -55,7 +55,7 @@ class TestLibros(unittest.TestCase):
 
         cursor.close()
         conn.close()
-        resultado = biblioteca.get_libro(libro_id)
+        resultado = biblioteca.get_libroById(libro_id)
         conn = conexion.get_connection()
         cursor = conn.cursor()
         self.assertEqual(resultado.titulo, libro.titulo)
@@ -66,10 +66,76 @@ class TestLibros(unittest.TestCase):
         conn.commit()
         conn.close()
 
+    def test_get_libroByTitulo(self):
+        libro = Libro("Jeronimo Stilton 2, la venganza", "Sebita Sebas", 122, "1")
+        biblioteca.add_libro(libro)
+
+        conn = conexion.get_connection()
+        cursor = conn.cursor()
+        cursor.execute("SELECT titulo FROM libros WHERE titulo = 'Jeronimo Stilton 2, la venganza'")
+        libro_titulo = cursor.fetchone()[0]
+
+        cursor.close()
+        conn.close()
+        resultado = biblioteca.get_libroByTitulo(libro_titulo)
+        conn = conexion.get_connection()
+        cursor = conn.cursor()
+        self.assertEqual(resultado.titulo, libro.titulo)
+
+
+        cursor.execute("DELETE FROM libros WHERE titulo = ?",(libro_titulo,))
+
+        conn.commit()
+        conn.close()
+
+    def test_get_libroByAutor(self):
+        libro = Libro("La Biblia", "Sebita Sebas Jesus", 122, "1")
+        biblioteca.add_libro(libro)
+
+        conn = conexion.get_connection()
+        cursor = conn.cursor()
+        cursor.execute("SELECT autor FROM libros WHERE autor = 'Sebita Sebas Jesus'")
+        libro_autor = cursor.fetchone()[0]
+
+        cursor.close()
+        conn.close()
+        resultado = biblioteca.get_libroByAutor(libro_autor)
+        conn = conexion.get_connection()
+        cursor = conn.cursor()
+        self.assertEqual(resultado.autor, libro.autor)
+
+
+        cursor.execute("DELETE FROM libros WHERE autor = ?",(libro_autor,))
+
+        conn.commit()
+        conn.close()
+
+    def test_get_libroByDisponible(self):
+        libro = Libro("Libro sin stock", "Sebita Sebas", 0, "1")
+        biblioteca.add_libro(libro)
+
+        conn = conexion.get_connection()
+        cursor = conn.cursor()
+        cursor.execute("SELECT disponible FROM libros WHERE disponible = '0'")
+        libro_disponible = cursor.fetchone()[0]
+
+        cursor.close()
+        conn.close()
+        resultado = biblioteca.get_libroByDisponible(libro_disponible)
+        conn = conexion.get_connection()
+        cursor = conn.cursor()
+        self.assertEqual(resultado.disponible, libro.disponible)
+
+
+        cursor.execute("DELETE FROM libros WHERE disponible = ?",(libro_disponible,))
+
+        conn.commit()
+        conn.close()
+
     def test_get_libro_no_existe(self):
         conn = conexion.get_connection()
 
-        resultado = biblioteca.get_libro(-1)
+        resultado = biblioteca.get_libroById(-1)
         self.assertEqual(resultado, None)
 
         conn.close()

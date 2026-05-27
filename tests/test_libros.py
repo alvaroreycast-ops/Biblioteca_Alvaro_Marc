@@ -39,6 +39,8 @@ class TestLibros(unittest.TestCase):
         cursor = conn.cursor()
         cursor.execute("SELECT COUNT(*) FROM libros WHERE id = ?", (libro_id,))
         resultado = cursor.fetchone()[0]
+
+        cursor.execute("DELETE FROM libros WHERE titulo = 'Dragon Ball GT'")
         conn.close()
 
         self.assertEqual(resultado, 0)

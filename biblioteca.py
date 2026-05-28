@@ -99,20 +99,29 @@ def prestar_libro(libro_id, usuario_id):
     """Presta un libro si existe y está disponible."""
     _crear_tabla_prestamos()
     libro = get_libroById(libro_id)
+
     if libro is None:
         return "Libro no encontrado"
-    if not libro.disponible:
+
+    if libro.disponible <= 0:
         return "Libro no disponible"
+
     with conexion.get_connection() as conn:
         cursor = conn.cursor()
+
+        # Restar 1 al stock disponible
         cursor.execute(
-            "UPDATE libros SET disponible = 0 WHERE id = ?", (libro_id,)
+            "UPDATE libros SET disponible = disponible - 1 WHERE id = ?",
+            (libro_id,)
         )
+
         cursor.execute(
             "INSERT INTO prestamos (libro_id, usuario_id) VALUES (?, ?)",
             (libro_id, usuario_id)
         )
+
         conn.commit()
+
     return "Libro prestado"
 
 
@@ -400,16 +409,3 @@ def get_usuarioByApellidos(apellidos):
     return usuarios
 
 
-def buscar_usuario_por_nombre(nombre):
-    """Busca usuarios por nombre."""
-    return get_usuarioByNombre(nombre)
-
-
-def buscar_usuario_por_email(email):
-    """Busca un usuario por email."""
-    return get_usuarioByEmail(email)
-
-
-def buscar_usuarios_por_apellidos(apellidos):
-    """Busca usuarios por apellidos."""
-    return get_usuarioByApellidos(apellidos)

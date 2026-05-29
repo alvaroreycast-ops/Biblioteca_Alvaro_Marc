@@ -402,3 +402,44 @@ def get_usuarioByApellidos(apellidos):
         for fila in cursor.fetchall():
             usuarios.append(_usuario_desde_fila(fila))
     return usuarios
+
+
+def _crear_tabla_logs():
+    """Crea la tabla de logs si no existe."""
+    with conexion.get_connection() as conn:
+        cursor = conn.cursor()
+        cursor.execute("""
+            CREATE TABLE IF NOT EXISTS logs (
+                id INTEGER PRIMARY KEY AUTOINCREMENT,
+                mensaje TEXT NOT NULL,
+                libro_id INTEGER,
+                usuario_id INTEGER,
+                fecha TEXT DEFAULT CURRENT_TIMESTAMP
+            )
+        """)
+        conn.commit()
+
+
+def _registrar_log(mensaje, libro_id=None, usuario_id=None):
+    """Guarda una entrada en el log del sistema."""
+    _crear_tabla_logs()
+    with conexion.get_connection() as conn:
+        cursor = conn.cursor()
+        cursor.execute(
+            "INSERT INTO logs (mensaje, libro_id, usuario_id) VALUES (?, ?, ?)",
+            (mensaje, libro_id, usuario_id)
+        )
+        conn.commit()
+
+
+def get_logs():
+    """Devuelve todos los registros del log como lista de dicts."""
+    _crear_tabla_logs()
+    with conexion.get_connection() as conn:
+        cursor = conn.cursor()
+        cursor.execute("SELECT id, mensaje, libro_id, usuario_id, fecha FROM logs")
+        filas = cursor.fetchall()
+    return [
+        {"id": f[0], "mensaje": f[1], "libro_id": f[2], "usuario_id": f[3], "fecha": f[4]}
+        for f in filas
+    ]

@@ -1,4 +1,5 @@
 from bd import conexion
+from clases import Prestamos
 from clases.Libro import Libro
 from clases.Usuario import Usuario
 
@@ -297,11 +298,6 @@ def get_usuarioById(id):
     return _usuario_desde_fila(resultado)
 
 
-def get_usuario(id):
-    """Recibe un usuario de la base de datos segun su id."""
-    return get_usuarioById(id)
-
-
 def update_usuario(id, usuario):
     """Actualiza los datos de un usuario existente."""
     _crear_tabla_usuarios()
@@ -387,17 +383,22 @@ def get_usuarioByApellidos(apellidos):
             usuarios.append(_usuario_desde_fila(fila))
     return usuarios
 
+def devolver_libro(libro_id,usuario_id):
+    """Si el usuario tiene ese libro, se borra de la base de datos y aumenta disponible en uno."""
 
-def buscar_usuario_por_nombre(nombre):
-    """Busca usuarios por nombre."""
-    return get_usuarioByNombre(nombre)
+    with conexion.get_connection() as conn:
+        cursor = conn.cursor()
+        cursor.execute("SELECT id FROM prestamos WHERE libro_id = ? AND usuario_id = ?", (libro_id,usuario_id))
+        resultado = cursor.fetchone()
 
+        if not resultado:
+            print("No hay ningun prestamo de ese libro a ese usuario")
+            return None
 
-def buscar_usuario_por_email(email):
-    """Busca un usuario por email."""
-    return get_usuarioByEmail(email)
+        prestamo_id = resultado[0]
 
+        cursor.execute("DELETE FROM prestamos WHERE id = ?", (prestamo_id,))
+        cursor.execute("UPDATE libros SET disponible = disponible + 1 WHERE id = ?", (libro_id,))
 
-def buscar_usuarios_por_apellidos(apellidos):
-    """Busca usuarios por apellidos."""
-    return get_usuarioByApellidos(apellidos)
+        conn.commit()
+        return 1

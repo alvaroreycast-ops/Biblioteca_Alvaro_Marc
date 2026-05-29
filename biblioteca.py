@@ -93,8 +93,6 @@ def _crear_tabla_prestamos():
         """)
         conn.commit()
 
-
-
 def prestar_libro(libro_id, usuario_id):
     """Presta un libro si existe y está disponible."""
     _crear_tabla_prestamos()
@@ -103,26 +101,24 @@ def prestar_libro(libro_id, usuario_id):
     if libro is None:
         return "Libro no encontrado"
 
-    if libro.disponible <= 0:
+    if not libro.disponible:
         return "Libro no disponible"
 
     with conexion.get_connection() as conn:
         cursor = conn.cursor()
-
-        # Restar 1 al stock disponible
         cursor.execute(
-            "UPDATE libros SET disponible = disponible - 1 WHERE id = ?",
+            "UPDATE libros SET disponible = 0 WHERE id = ?",
             (libro_id,)
         )
-
         cursor.execute(
             "INSERT INTO prestamos (libro_id, usuario_id) VALUES (?, ?)",
             (libro_id, usuario_id)
         )
-
         conn.commit()
 
     return "Libro prestado"
+
+
 
 
 def devolver_libro(titulo):

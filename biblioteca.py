@@ -119,24 +119,25 @@ def prestar_libro(libro_id, usuario_id):
     return "Libro prestado"
 
 
-def devolver_libro(titulo):
-    """Devuelve un libro prestado a la biblioteca."""
-    global ultimo_error
-    libro_encontrado = buscar_libro(titulo)
-    if libro_encontrado is None:
-        _mostrar_mensaje_biblioteca("No se encontro el libro", "", 2)
-        ultimo_error = "Libro no encontrado"
-        return "Libro no encontrado"
-    else:
-        if libro_encontrado["disponible"] == False:
-            ultimo_error = ""
-            return _actualizar_estado_prestamo("d", libro_encontrado)
-        else:
-            if libro_encontrado["disponible"] != False:
-                _mostrar_mensaje_biblioteca("El libro ya estaba disponible", "", 2)
-                ultimo_error = "Libro ya disponible"
-                return "Libro ya disponible"
+def devolver_libro(libro_id,usuario_id):
+    """Si el usuario tiene ese libro, se borra de la base de datos y aumenta disponible en uno."""
 
+    with conexion.get_connection() as conn:
+        cursor = conn.cursor()
+        cursor.execute("SELECT id FROM prestamos WHERE libro_id = ? AND usuario_id = ?", (libro_id,usuario_id))
+        resultado = cursor.fetchone()
+
+        if not resultado:
+            print("No hay ningun prestamo de ese libro a ese usuario")
+            return None
+
+        prestamo_id = resultado[0]
+
+        cursor.execute("DELETE FROM prestamos WHERE id = ?", (prestamo_id,))
+        cursor.execute("UPDATE libros SET disponible = disponible + 1 WHERE id = ?", (libro_id,))
+
+        conn.commit()
+        return 1
 
 def mostrar_libros():
     """Muestra todos los libros de la biblioteca por pantalla."""
@@ -401,23 +402,3 @@ def get_usuarioByApellidos(apellidos):
         for fila in cursor.fetchall():
             usuarios.append(_usuario_desde_fila(fila))
     return usuarios
-
-def devolver_libro(libro_id,usuario_id):
-    """Si el usuario tiene ese libro, se borra de la base de datos y aumenta disponible en uno."""
-
-    with conexion.get_connection() as conn:
-        cursor = conn.cursor()
-        cursor.execute("SELECT id FROM prestamos WHERE libro_id = ? AND usuario_id = ?", (libro_id,usuario_id))
-        resultado = cursor.fetchone()
-
-        if not resultado:
-            print("No hay ningun prestamo de ese libro a ese usuario")
-            return None
-
-        prestamo_id = resultado[0]
-
-        cursor.execute("DELETE FROM prestamos WHERE id = ?", (prestamo_id,))
-        cursor.execute("UPDATE libros SET disponible = disponible + 1 WHERE id = ?", (libro_id,))
-
-        conn.commit()
-        return 1

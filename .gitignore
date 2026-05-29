@@ -9,7 +9,6 @@ venv/
 env/
 
 # Test and coverage output
-.coverage
 htmlcov/
 .pytest_cache/
 

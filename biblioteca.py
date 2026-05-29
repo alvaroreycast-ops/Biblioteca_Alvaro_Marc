@@ -1,5 +1,4 @@
 from bd import conexion
-from clases import Prestamos
 from clases.Libro import Libro
 from clases.Usuario import Usuario
 
@@ -78,31 +77,46 @@ def buscar_libro(titulo):
     return libro_encontrado
 
 
-def prestar_libro(titulo):
-    """Presta un libro si existe y esta disponible."""
-    global ultimo_error
-    resultado_prestamo = "Libro no encontrado"
-    posicion_libro = 0
-    while posicion_libro < len(libros):
-        libro_actual = libros[posicion_libro]
-        if libro_actual["titulo"] == titulo:
-            if libro_actual["disponible"] == True:
-                resultado_prestamo = _actualizar_estado_prestamo("p", libro_actual)
-                ultimo_error = ""
-                posicion_libro = len(libros) + 100
-            else:
-                _mostrar_mensaje_biblioteca("El libro no esta disponible", "", 2)
-                resultado_prestamo = "Libro no disponible"
-                ultimo_error = resultado_prestamo
-                posicion_libro = len(libros) + 100
-        else:
-            posicion_libro = posicion_libro + 1
+def _crear_tabla_prestamos():
+    """Crea la tabla de préstamos si no existe."""
+    with conexion.get_connection() as conn:
+        cursor = conn.cursor()
+        cursor.execute("""
+            CREATE TABLE IF NOT EXISTS prestamos (
+                id INTEGER PRIMARY KEY AUTOINCREMENT,
+                libro_id INTEGER NOT NULL,
+                usuario_id INTEGER NOT NULL,
+                fecha_prestamo TEXT DEFAULT CURRENT_TIMESTAMP,
+                FOREIGN KEY (libro_id) REFERENCES libros(id),
+                FOREIGN KEY (usuario_id) REFERENCES usuarios(id)
+            )
+        """)
+        conn.commit()
 
-    if resultado_prestamo == "Libro no encontrado":
-        _mostrar_mensaje_biblioteca("No se encontro el libro", "", 2)
-        ultimo_error = resultado_prestamo
+def prestar_libro(libro_id, usuario_id):
+    """Presta un libro si existe y está disponible."""
+    _crear_tabla_prestamos()
+    libro = get_libroById(libro_id)
 
-    return resultado_prestamo
+    if libro is None:
+        return "Libro no encontrado"
+
+    if not libro.disponible:
+        return "Libro no disponible"
+
+    with conexion.get_connection() as conn:
+        cursor = conn.cursor()
+        cursor.execute(
+            "UPDATE libros SET disponible = 0 WHERE id = ?",
+            (libro_id,)
+        )
+        cursor.execute(
+            "INSERT INTO prestamos (libro_id, usuario_id) VALUES (?, ?)",
+            (libro_id, usuario_id)
+        )
+        conn.commit()
+
+    return "Libro prestado"
 
 
 def devolver_libro(titulo):
@@ -296,6 +310,11 @@ def get_usuarioById(id):
         cursor.execute("SELECT * FROM usuarios WHERE id = ?", (id,))
         resultado = cursor.fetchone()
     return _usuario_desde_fila(resultado)
+
+
+def get_usuario(id):
+    """Recibe un usuario de la base de datos segun su id."""
+    return get_usuarioById(id)
 
 
 def update_usuario(id, usuario):

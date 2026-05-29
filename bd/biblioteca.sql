@@ -1,3 +1,12 @@
 BEGIN TRANSACTION;
 CREATE TABLE libros (id INTEGER PRIMARY KEY, titulo TEXT NOT NULL, autor TEXT NOT NULL, disponible INTEGER NOT NULL DEFAULT 1);
+CREATE TABLE usuarios (
+    id INTEGER PRIMARY KEY,
+    nombre TEXT NOT NULL,
+    apellidos TEXT NOT NULL,
+    email TEXT NOT NULL UNIQUE,
+    habilitado INTEGER NOT NULL DEFAULT 1,
+    telefono TEXT DEFAULT '',
+    dni TEXT DEFAULT ''
+);
 COMMIT;

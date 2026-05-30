@@ -116,6 +116,11 @@ def prestar_libro(libro_id, usuario_id):
         )
         conn.commit()
 
+    _registrar_log(
+        f"Usuario {usuario_id} ha prestado el libro {libro.titulo}",
+        libro_id=libro_id,
+        usuario_id=usuario_id
+    )
     return "Libro prestado"
 
 

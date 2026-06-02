@@ -117,9 +117,7 @@ def prestar_libro(libro_id, usuario_id):
         conn.commit()
 
     _registrar_log(
-        f"Usuario {usuario_id} ha prestado el libro {libro.titulo}",
-        libro_id=libro_id,
-        usuario_id=usuario_id
+        f"Usuario {usuario_id} ha prestado el libro {libro.titulo}"
     )
     return "Libro prestado"
 
@@ -137,11 +135,18 @@ def devolver_libro(libro_id,usuario_id):
             return None
 
         prestamo_id = resultado[0]
-
+        cursor.execute(
+            "SELECT titulo FROM libros WHERE id = ?",
+            (libro_id,)
+        )
+        titulo = cursor.fetchone()[0]
         cursor.execute("DELETE FROM prestamos WHERE id = ?", (prestamo_id,))
         cursor.execute("UPDATE libros SET disponible = disponible + 1 WHERE id = ?", (libro_id,))
 
         conn.commit()
+        _registrar_log(
+            f"Usuario {usuario_id} ha devuelto el libro {titulo}"
+        )
         return 1
 
 def mostrar_libros():
@@ -178,14 +183,25 @@ def add_libro(libro):
                        VALUES (?, ?, ?, ?)
                        """, (libro.titulo, libro.autor, libro.disponible, libro.isbn))
         conn.commit()
+        _registrar_log(
+            f"Libro añadido {libro.titulo}"
+        )
 
 
 def remove_libro(id):
     """Elimina un libro de la base de datos segun su id."""
     with conexion.get_connection() as conn:
         cursor = conn.cursor()
+        cursor.execute(
+            "SELECT titulo FROM libros WHERE id = ?",
+            (id,)
+        )
+        titulo = cursor.fetchone()[0]
         cursor.execute("DELETE FROM libros WHERE id = ?", (id,))
         conn.commit()
+        _registrar_log(
+            f"Libro eliminado {titulo}"
+        )
 
 
 def get_libroById(id):
@@ -296,6 +312,9 @@ def add_usuario(usuario):
                            usuario.dni,
                        ))
         conn.commit()
+        _registrar_log(
+            f"Creado usuario {usuario.nombre}"
+        )
         return cursor.lastrowid
 
 
@@ -304,8 +323,16 @@ def remove_usuario(id):
     _crear_tabla_usuarios()
     with conexion.get_connection() as conn:
         cursor = conn.cursor()
+        cursor.execute(
+            "SELECT nombre FROM usuarios WHERE id = ?",
+            (id,)
+        )
+        nombre = cursor.fetchone()[0]
         cursor.execute("DELETE FROM usuarios WHERE id = ?", (id,))
         conn.commit()
+        _registrar_log(
+            f"Eliminado usuario {nombre}"
+        )
 
 
 def get_usuarioById(id):
@@ -343,6 +370,9 @@ def update_usuario(id, usuario):
                            id,
                        ))
         conn.commit()
+        _registrar_log(
+            f"Actualizado usuario {usuario.nombre}"
+        )
 
 
 def list_usuarios():
@@ -373,6 +403,9 @@ def deshabilita_usuario(id):
         cursor = conn.cursor()
         cursor.execute("UPDATE usuarios SET habilitado = 0 WHERE id = ?", (id,))
         conn.commit()
+        _registrar_log(
+            f"Deshabilitado usuario con id: {id}"
+        )
 
 
 def get_usuarioByNombre(nombre):
@@ -425,14 +458,14 @@ def _crear_tabla_logs():
         conn.commit()
 
 
-def _registrar_log(mensaje, libro_id=None, usuario_id=None):
+def _registrar_log(mensaje):
     """Guarda una entrada en el log del sistema."""
     _crear_tabla_logs()
     with conexion.get_connection() as conn:
         cursor = conn.cursor()
         cursor.execute(
-            "INSERT INTO logs (mensaje, libro_id, usuario_id) VALUES (?, ?, ?)",
-            (mensaje, libro_id, usuario_id)
+            "INSERT INTO logs (mensaje) VALUES (?)",
+            (mensaje,)
         )
         conn.commit()
 
@@ -442,9 +475,9 @@ def get_logs():
     _crear_tabla_logs()
     with conexion.get_connection() as conn:
         cursor = conn.cursor()
-        cursor.execute("SELECT id, mensaje, libro_id, usuario_id, fecha FROM logs")
+        cursor.execute("SELECT id, mensaje, fecha FROM logs")
         filas = cursor.fetchall()
     return [
-        {"id": f[0], "mensaje": f[1], "libro_id": f[2], "usuario_id": f[3], "fecha": f[4]}
+        {"id": f[0], "mensaje": f[1], "fecha": f[2]}
         for f in filas
     ]

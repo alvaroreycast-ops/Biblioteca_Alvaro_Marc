@@ -7,6 +7,163 @@ bd = libros
 modo = "normal"
 ultimo_error = ""
 
+def menu_principal():
+    while True:
+        print("\n======================")
+        print("📚 BIBLIOTECA")
+        print("======================")
+        print("1. Gestión de libros")
+        print("2. Gestión de usuarios")
+        print("3. Préstamos")
+        print("4. Logs")
+        print("0. Salir")
+
+        opcion = input("Elige opción: ")
+
+        if opcion == "1":
+            menu_libros()
+        elif opcion == "2":
+            menu_usuarios()
+        elif opcion == "3":
+            menu_prestamos()
+        elif opcion == "4":
+            menu_logs()
+        elif opcion == "0":
+            print("Saliendo...")
+            break
+        else:
+            print("Opción no válida")
+
+
+def menu_libros():
+    while True:
+        print("\n--- LIBROS ---")
+        print("1. Añadir libro")
+        print("2. Eliminar libro")
+        print("3. Listar libros")
+        print("4. Buscar por ID")
+        print("5. Buscar por título")
+        print("6. Buscar por autor")
+        print("7. Buscar por disponibilidad")
+        print("0. Volver")
+
+        opcion = input("Elige: ")
+
+        if opcion == "1":
+            titulo = input("Título: ")
+            autor = input("Autor: ")
+            isbn = input("ISBN: ")
+            libro = Libro(titulo, autor, True, isbn)
+            add_libro(libro)
+
+        elif opcion == "2":
+            id_libro = int(input("ID: "))
+            remove_libro(id_libro)
+
+        elif opcion == "3":
+            for l in list_libros():
+                print(l.titulo, "-", l.autor)
+
+        elif opcion == "4":
+            id_libro = int(input("ID: "))
+            print(get_libroById(id_libro))
+
+        elif opcion == "5":
+            titulo = input("Título: ")
+            print(get_libroByTitulo(titulo))
+
+        elif opcion == "6":
+            autor = input("Autor: ")
+            print(get_libroByAutor(autor))
+
+        elif opcion == "7":
+            disp = int(input("Disponibilidad (0/1): "))
+            print(get_libroByDisponible(disp))
+
+        elif opcion == "0":
+            break
+
+
+def menu_usuarios():
+    while True:
+        print("\n--- USUARIOS ---")
+        print("1. Añadir usuario")
+        print("2. Eliminar usuario")
+        print("3. Listar usuarios")
+        print("4. Buscar por ID")
+        print("5. Buscar por email")
+        print("6. Buscar por nombre")
+        print("7. Buscar por apellidos")
+        print("0. Volver")
+
+        opcion = input("Elige: ")
+
+        if opcion == "1":
+            nombre = input("Nombre: ")
+            apellidos = input("Apellidos: ")
+            email = input("Email: ")
+            usuario = Usuario(nombre, apellidos, email, True)
+            add_usuario(usuario)
+
+        elif opcion == "2":
+            id_user = int(input("ID: "))
+            remove_usuario(id_user)
+
+        elif opcion == "3":
+            for u in list_usuarios():
+                print(u.nombre, u.apellidos)
+
+        elif opcion == "4":
+            id_user = int(input("ID: "))
+            print(get_usuarioById(id_user))
+
+        elif opcion == "5":
+            email = input("Email: ")
+            print(get_usuarioByEmail(email))
+
+        elif opcion == "6":
+            nombre = input("Nombre: ")
+            for u in get_usuarioByNombre(nombre):
+                print(u)
+
+        elif opcion == "7":
+            apellidos = input("Apellidos: ")
+            print(get_usuarioByApellidos(apellidos))
+
+        elif opcion == "0":
+            break
+
+def menu_prestamos():
+    while True:
+        print("\n--- PRÉSTAMOS ---")
+        print("1. Prestar libro")
+        print("2. Devolver libro")
+        print("0. Volver")
+
+        opcion = input("Elige: ")
+
+        if opcion == "1":
+            libro_id = int(input("ID libro: "))
+            usuario_id = int(input("ID usuario: "))
+            print(prestar_libro(libro_id, usuario_id))
+
+        elif opcion == "2":
+            libro_id = int(input("ID libro: "))
+            usuario_id = int(input("ID usuario: "))
+            print(devolver_libro(libro_id, usuario_id))
+
+        elif opcion == "0":
+            break
+
+def menu_logs():
+    print("\n--- LOGS ---")
+    logs = get_logs()
+
+    for log in logs:
+        print(f"{log['id']} - {log['mensaje']} - {log['fecha']}")
+
+    input("\nEnter para volver...")
+
 
 def _mostrar_mensaje_biblioteca(mensaje, detalle="", tipo_formato=0):
     """Muestra un mensaje del programa de biblioteca por pantalla."""
@@ -147,7 +304,7 @@ def devolver_libro(libro_id,usuario_id):
         _registrar_log(
             f"Usuario {usuario_id} ha devuelto el libro {titulo}"
         )
-        return 1
+        return "Libro devuelto"
 
 def mostrar_libros():
     """Muestra todos los libros de la biblioteca por pantalla."""
@@ -212,7 +369,7 @@ def get_libroById(id):
         resultado = cursor.fetchone()
 
     if resultado:
-        return Libro(resultado[1], resultado[2], resultado[3], resultado[4])
+        return Libro(resultado[1], resultado[2], resultado[3], resultado[4],resultado[0])
     return None
 
 
@@ -224,7 +381,7 @@ def get_libroByTitulo(titulo):
         resultado = cursor.fetchone()
 
     if resultado:
-        return Libro(resultado[1], resultado[2], resultado[3], resultado[4])
+        return Libro(resultado[1], resultado[2], resultado[3], resultado[4],resultado[0])
     return None
 
 
@@ -236,7 +393,7 @@ def get_libroByAutor(autor):
         resultado = cursor.fetchone()
 
     if resultado:
-        return Libro(resultado[1], resultado[2], resultado[3], resultado[4])
+        return Libro(resultado[1], resultado[2], resultado[3], resultado[4],resultado[0])
     return None
 
 
@@ -248,7 +405,7 @@ def get_libroByDisponible(disponible):
         resultado = cursor.fetchone()
 
     if resultado:
-        return Libro(resultado[1], resultado[2], resultado[3], resultado[4])
+        return Libro(resultado[1], resultado[2], resultado[3], resultado[4],resultado[0])
     return None
 
 
@@ -343,11 +500,6 @@ def get_usuarioById(id):
         cursor.execute("SELECT * FROM usuarios WHERE id = ?", (id,))
         resultado = cursor.fetchone()
     return _usuario_desde_fila(resultado)
-
-
-def get_usuario(id):
-    """Recibe un usuario de la base de datos segun su id."""
-    return get_usuarioById(id)
 
 
 def update_usuario(id, usuario):
@@ -481,3 +633,6 @@ def get_logs():
         {"id": f[0], "mensaje": f[1], "fecha": f[2]}
         for f in filas
     ]
+
+if __name__ == "__main__":
+    menu_principal()

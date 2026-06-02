@@ -38,7 +38,7 @@ class TestPrestamos(unittest.TestCase):
 
         resultado = biblioteca.devolver_libro(libro_id,usuario_id)
 
-        self.assertEqual(resultado, 1)
+        self.assertEqual(resultado, "Libro devuelto")
 
         conn = conexion.get_connection()
         cursor = conn.cursor()

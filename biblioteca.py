@@ -10,7 +10,7 @@ ultimo_error = ""
 def menu_principal():
     while True:
         print("\n======================")
-        print("📚 BIBLIOTECA")
+        print("BIBLIOTECA")
         print("======================")
         print("1. Gestión de libros")
         print("2. Gestión de usuarios")
@@ -214,7 +214,11 @@ def agregar_libro(titulo, autor):
 
 
 def buscar_libro(titulo):
-    """Busca un libro de la biblioteca por su titulo."""
+    """Busca un libro de la biblioteca por su titulo.
+
+    Returns:
+        Libro encontrado
+    """
     posicion_libro = 0
     libro_encontrado = None
     seguir = True
@@ -251,7 +255,11 @@ def _crear_tabla_prestamos():
         conn.commit()
 
 def prestar_libro(libro_id, usuario_id):
-    """Presta un libro si existe y está disponible."""
+    """Presta un libro si existe y está disponible.
+
+    Returns:
+        Libro no encontrado, no disponible o libro prestado.
+    """
     _crear_tabla_prestamos()
     libro = get_libroById(libro_id)
 
@@ -280,7 +288,12 @@ def prestar_libro(libro_id, usuario_id):
 
 
 def devolver_libro(libro_id,usuario_id):
-    """Si el usuario tiene ese libro, se borra de la base de datos y aumenta disponible en uno."""
+    """
+    Si el usuario tiene ese libro, se borra de la base de datos y aumenta disponible en uno.
+
+    Returns:
+        None o libro devuelto.
+    """
 
     with conexion.get_connection() as conn:
         cursor = conn.cursor()
@@ -362,7 +375,11 @@ def remove_libro(id):
 
 
 def get_libroById(id):
-    """Recibe un libro de la base de datos segun su id."""
+    """Recibe un libro de la base de datos segun su id.
+
+    Returns:
+        Libro o None
+    """
     with conexion.get_connection() as conn:
         cursor = conn.cursor()
         cursor.execute("SELECT * FROM libros WHERE id = ?", (id,))
@@ -374,7 +391,11 @@ def get_libroById(id):
 
 
 def get_libroByTitulo(titulo):
-    """Recibe un libro de la base de datos segun su titulo."""
+    """Recibe un libro de la base de datos segun su titulo.
+
+    Returns:
+        Libro o None
+    """
     with conexion.get_connection() as conn:
         cursor = conn.cursor()
         cursor.execute("SELECT * FROM libros WHERE titulo = ?", (titulo,))
@@ -386,7 +407,11 @@ def get_libroByTitulo(titulo):
 
 
 def get_libroByAutor(autor):
-    """Recibe un libro de la base de datos segun su autor."""
+    """Recibe un libro de la base de datos segun su autor.
+
+    Returns:
+        Libro o None
+    """
     with conexion.get_connection() as conn:
         cursor = conn.cursor()
         cursor.execute("SELECT * FROM libros WHERE autor = ?", (autor,))
@@ -398,7 +423,11 @@ def get_libroByAutor(autor):
 
 
 def get_libroByDisponible(disponible):
-    """Recibe un libro de la base de datos segun su disponibilidad."""
+    """Recibe un libro de la base de datos segun su disponibilidad.
+
+    Returns:
+        Libro o None
+    """
     with conexion.get_connection() as conn:
         cursor = conn.cursor()
         cursor.execute("SELECT * FROM libros WHERE disponible = ?", (disponible,))
@@ -410,7 +439,10 @@ def get_libroByDisponible(disponible):
 
 
 def list_libros():
-    """READ: Devuelve una lista de todos los objetos Libro."""
+    """READ: Devuelve una lista de todos los objetos Libro.
+    Returns:
+        Lista libros o None
+    """
     lista_libros = []
     with conexion.get_connection() as conn:
         cursor = conn.cursor()
@@ -437,22 +469,25 @@ def _crear_tabla_usuarios():
                        """)
         columnas = cursor.execute("PRAGMA table_info(usuarios)").fetchall()
         nombres_columnas = [columna[1] for columna in columnas]
-        if "telefono" not in nombres_columnas:
-            cursor.execute("ALTER TABLE usuarios ADD COLUMN telefono TEXT")
-        if "dni" not in nombres_columnas:
-            cursor.execute("ALTER TABLE usuarios ADD COLUMN dni TEXT")
         conn.commit()
 
 
 def _usuario_desde_fila(fila):
-    """Convierte una fila de base de datos en un objeto Usuario."""
+    """Convierte una fila de base de datos en un objeto Usuario.
+
+    Returns:
+        Usuario o None
+    """
     if fila is None:
         return None
     return Usuario(fila[1], fila[2], fila[3], bool(fila[4]), fila[0], fila[5], fila[6])
 
 
 def add_usuario(usuario):
-    """Anade un usuario a la base de datos."""
+    """Anade un usuario a la base de datos.
+    Returns:
+        last row id
+    """
     _crear_tabla_usuarios()
     with conexion.get_connection() as conn:
         cursor = conn.cursor()
@@ -493,7 +528,11 @@ def remove_usuario(id):
 
 
 def get_usuarioById(id):
-    """Recibe un usuario de la base de datos segun su id."""
+    """Recibe un usuario de la base de datos segun su id.
+
+    Returns:
+        Usuario
+    """
     _crear_tabla_usuarios()
     with conexion.get_connection() as conn:
         cursor = conn.cursor()
@@ -528,7 +567,10 @@ def update_usuario(id, usuario):
 
 
 def list_usuarios():
-    """Devuelve una lista de todos los usuarios."""
+    """Devuelve una lista de todos los usuarios.
+    Returns:
+        lista suarios
+    """
     _crear_tabla_usuarios()
     usuarios = []
     with conexion.get_connection() as conn:
@@ -561,7 +603,10 @@ def deshabilita_usuario(id):
 
 
 def get_usuarioByNombre(nombre):
-    """Recibe usuarios de la base de datos segun su nombre."""
+    """Recibe usuarios de la base de datos segun su nombre.
+    Returns:
+        Lista usuarios
+    """
     _crear_tabla_usuarios()
     usuarios = []
     with conexion.get_connection() as conn:
@@ -573,7 +618,11 @@ def get_usuarioByNombre(nombre):
 
 
 def get_usuarioByEmail(email):
-    """Recibe un usuario de la base de datos segun su email."""
+    """Recibe un usuario de la base de datos segun su email.
+    Returns:
+        Lista usuarios
+
+"""
     _crear_tabla_usuarios()
     with conexion.get_connection() as conn:
         cursor = conn.cursor()
@@ -583,7 +632,10 @@ def get_usuarioByEmail(email):
 
 
 def get_usuarioByApellidos(apellidos):
-    """Recibe usuarios de la base de datos segun sus apellidos."""
+    """Recibe usuarios de la base de datos segun sus apellidos.
+    Returns:
+        Lista usuarios
+    """
     _crear_tabla_usuarios()
     usuarios = []
     with conexion.get_connection() as conn:
@@ -629,10 +681,10 @@ def get_logs():
         cursor = conn.cursor()
         cursor.execute("SELECT id, mensaje, fecha FROM logs")
         filas = cursor.fetchall()
-    return [
-        {"id": f[0], "mensaje": f[1], "fecha": f[2]}
-        for f in filas
-    ]
+        return [
+            {"id": f[0], "mensaje": f[1], "fecha": f[2]}
+            for f in filas
+        ]
 
 if __name__ == "__main__":
     menu_principal()

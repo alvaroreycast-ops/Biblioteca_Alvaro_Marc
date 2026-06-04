@@ -22,6 +22,30 @@ class TestUsuarios(unittest.TestCase):
         finally:
             conn.close()
 
+    def test_update_usuario(self):
+        usuario = Usuario("Ash","Ketchup","pokemon@test.local",True,telefono="600411222",dni="00000000M")
+
+        usuario_id = biblioteca.add_usuario(usuario)
+
+        usuario_actualizado = Usuario("Actualizado","ApellidoNuevo","digimon@test.local",False,telefono="611111111", dni="11111111B" )
+
+        biblioteca.update_usuario(usuario_id, usuario_actualizado)
+
+        resultado = biblioteca.get_usuarioById(usuario_id)
+
+        self.assertEqual(resultado.nombre, "Actualizado")
+        self.assertEqual(resultado.apellidos, "ApellidoNuevo")
+        self.assertEqual(resultado.email, "digimon@test.local")
+        self.assertFalse(resultado.habilitado)
+        self.assertEqual(resultado.telefono, "611111111")
+        self.assertEqual(resultado.dni, "11111111B")
+
+        conn = conexion.get_connection()
+        cursor = conn.cursor()
+        cursor.execute("DELETE FROM usuarios WHERE id = ?", (usuario_id,))
+        conn.commit()
+        conn.close()
+
     def test_remove_usuario(self):
         usuario = Usuario("Marc", "Zahonero", "marc@test.local", True, telefono="600333444", dni="87654321B")
         usuario_id = biblioteca.add_usuario(usuario)

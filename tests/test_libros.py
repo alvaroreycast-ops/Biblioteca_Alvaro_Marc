@@ -112,6 +112,10 @@ class TestLibros(unittest.TestCase):
         conn.commit()
         conn.close()
 
+    def test_get_libroByAutor_None(self):
+        resultado = biblioteca.get_libroByAutor("No existe")
+        self.assertIsNone(resultado)
+
     def test_get_libroByDisponible(self):
         libro = Libro("Libro sin stock", "Sebita Sebas", 0, "1")
         biblioteca.add_libro(libro)
@@ -133,6 +137,9 @@ class TestLibros(unittest.TestCase):
 
         conn.commit()
         conn.close()
+    def test_get_libroByDisponible_None(self):
+        resultado = biblioteca.get_libroByDisponible(9)
+        self.assertIsNone(resultado)
 
     def test_get_libro_no_existe(self):
         conn = conexion.get_connection()
